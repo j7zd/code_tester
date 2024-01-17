@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  # app:
+  #   build: ./app/
+  #   ports:
+  #     - "5000:5000"
+  #   depends_on:
+  #     - code_tester
+  #   links:
+  #     - code_tester
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: code
+    volumes:
+      - ./mysql:/var/lib/mysql
+  # code_tester:
+  #   build: ./code_tester/
+  #   depends_on:
+  #     - mysql
+  #   links:
+  #     - mysql
