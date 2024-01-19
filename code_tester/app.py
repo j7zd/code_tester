@@ -33,21 +33,8 @@ class Test(db.Model):
     result = db.Column(db.Enum(ResultEnum), nullable=False)
 
 with app.app_context():
-    db.drop_all()
+    #db.drop_all()
     db.create_all()
-
-    # FOR TESTING
-    code = Code(api_key='test', language='C++', code='from os import getenv\nimport sqlalchemy as db\n\ndef test_code(code: str):\n    host = getenv(\'MYSQL_HOST\')\n    user = getenv(\'MYSQL_USER\')\n    password = getenv(\'MYSQL_PASSWORD\')\n    database = getenv(\'MYSQL_DATABASE\')\n\n    engine = db.create_engine(f\'mysql+pymysql://{user}:{password}@{host}/{database}\')\n    connection = engine.connect()\n    metadata = db.MetaData()\n', datetime='2020-01-01 00:00', num_tests=3)
-    db.session.add(code)
-    test = Test(code_id=1, test=1, time=0.1, memory=100, result=ResultEnum.OK)
-    db.session.add(test)
-    test = Test(code_id=1, test=2, time=0.2, memory=200, result=ResultEnum.WA)
-    db.session.add(test)
-    test = Test(code_id=1, test=3, time=0.3, memory=300, result=ResultEnum.TL)
-    db.session.add(test)
-
-    db.session.commit()
-    #############
 
 @app.route('/code', methods=['POST'])
 def test_code():
@@ -77,7 +64,7 @@ def test_code():
 
 def tc(code_tester: CodeTester, code_id: int):
     with app.app_context():        
-        for i in range(code_tester.n_tests()):
+        for i in range(1, code_tester.n_tests() + 1):
             test = code_tester.test(i)
             test = Test(code_id=code_id, test=i, time=test['time'], memory=test['memory'], result=test['result'])
             db.session.add(test)

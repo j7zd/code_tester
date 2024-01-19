@@ -24,7 +24,7 @@ class CodeTester:
         path = f'tests/{test_set}'
         if not os.path.isdir(path):
             raise Exception('Invalid test set')
-        self.__n_tests = len(os.listdir(path)) / 2
+        self.__n_tests = len(os.listdir(path)) // 3
         self.__language = language
         self.__code = code
         self.__dir = path + '/{name}.txt'
@@ -62,10 +62,10 @@ class CodeTester:
         for i in range(10):
             timer_start = time_ns()
             try:
-                output = sb.run(f"./a.out", shell=True, input=sin, capture_output=True, text=True, timeout=5)
+                output = sb.run(f"./a.out", shell=True, input=sin, capture_output=True, text=True, timeout=cntxt['max_time'] / 500)
             except:
                 result = ResultEnum.TL
-                times.append(5000000000000)
+                times.append(cntxt['max_time'] * 2000000)
                 break
             if output.returncode != 0:
                 result = ResultEnum.RE

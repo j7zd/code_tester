@@ -3,3 +3,5 @@ Flask-SQLAlchemy
 requests
 pymysql
 cryptography
+flask-swagger
+flask-swagger-ui

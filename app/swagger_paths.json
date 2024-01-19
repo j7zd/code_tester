@@ -1,0 +1,193 @@
+{
+    "/languages": {
+        "get": {
+            "tags": ["languages"],
+            "description": "Get a list of languages supported by the code tester",
+            "responses": {
+                "200": {
+                    "description": "Languages",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "languages": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/problems": {
+        "get": {
+            "tags": ["problems"],
+            "description": "Get a list of problems that can be tested",
+            "responses": {
+                "200": {
+                    "description": "Problems",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "problems": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/code": {
+        "post": {
+            "tags": ["code"],
+            "description": "Submit code to be tested",
+            "parameters": [
+                {
+                    "name": "code",
+                    "description": "The code to be tested",
+                    "in": "body",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string"
+                            },
+                            "language": {
+                                "type": "string"
+                            },
+                            "problem": {
+                                "type": "string"
+                            },
+                            "api_key": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "ID that can be used to get the result of the tests",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/result/{id}": {
+        "get": {
+            "tags": ["result"],
+            "description": "Get the result of the tests",
+            "parameters": [
+                {
+                    "name": "id",
+                    "description": "The id of the code",
+                    "in": "path",
+                    "type": "integer"
+                },
+                {
+                    "name": "api_key",
+                    "description": "The api key of the user",
+                    "in": "query",
+                    "type": "string"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "Result of the tests",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string"
+                            },
+                            "datetime": {
+                                "type": "string"
+                            },
+                            "num_tests": {
+                                "type": "integer"
+                            },
+                            "tests": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "properties": {
+                                        "test": {
+                                            "type": "integer"
+                                        },
+                                        "time": {
+                                            "type": "float"
+                                        },
+                                        "memory": {
+                                            "type": "integer"
+                                        },
+                                        "result": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "/results": {
+        "get": {
+            "tags": ["results"],
+            "description": "Get a list of the results of the tests made by the user",
+            "parameters": [
+                {
+                    "name": "api_key",
+                    "description": "The api key of the user",
+                    "in": "query",
+                    "type": "string"
+                },
+                {
+                    "name": "page",
+                    "description": "The page number. If not specified, returns the number of pages",
+                    "in": "query",
+                    "type": "integer"
+                },
+                {
+                    "name": "per_page",
+                    "description": "The number of results per page. If not specified, returns all results",
+                    "in": "query",
+                    "type": "integer"
+                }
+            ],
+            "responses": {
+                "200": {
+                    "description": "List of results",
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "ids": {
+                                "type": "array",
+                                "items": {
+                                    "type": "integer"
+                                }
+                            },
+                            "pages": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

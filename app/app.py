@@ -4,6 +4,9 @@ from os import getenv
 from enum import Enum
 import requests
 from math import ceil
+from flask_swagger import swagger
+from flask_swagger_ui import get_swaggerui_blueprint
+import json
 
 auth = '3e2e203d5009dcc4b93c26c5686c24a2461994e153b1da2f083f1a9eb10021bc'
 
@@ -44,28 +47,21 @@ class Keys(db.Model):
     user_level = db.Column(db.Integer, nullable=False)
 
 with app.app_context():
-    db.drop_all()
+    #b.drop_all()
     db.create_all()
 
-    # FOR TESTING
-    code = Code(api_key='test', language='C++', code='from os import getenv\nimport sqlalchemy as db\n\ndef test_code(code: str):\n    host = getenv(\'MYSQL_HOST\')\n    user = getenv(\'MYSQL_USER\')\n    password = getenv(\'MYSQL_PASSWORD\')\n    database = getenv(\'MYSQL_DATABASE\')\n\n    engine = db.create_engine(f\'mysql+pymysql://{user}:{password}@{host}/{database}\')\n    connection = engine.connect()\n    metadata = db.MetaData()\n', datetime='2020-01-01 00:00', num_tests=3)
-    db.session.add(code)
-    test = Test(code_id=1, test=1, time=0.1, memory=100, result=ResultEnum.OK)
-    db.session.add(test)
-    test = Test(code_id=1, test=2, time=0.2, memory=200, result=ResultEnum.WA)
-    db.session.add(test)
-    test = Test(code_id=1, test=3, time=0.3, memory=300, result=ResultEnum.TL)
-    db.session.add(test)
-    key = Keys(api_key='test', user_level=1)
-    db.session.add(key)
+@app.route('/languages', methods=['GET'])
+def get_languages():
+    return jsonify({'languages': ['c++']}) # TODO: ask code tester for languages
 
-    db.session.commit()
-    #############
+@app.route('/problems', methods=['GET'])
+def get_problems():
+    return jsonify({'problems': ['1']}) # TODO: ask code tester for problems
 
 @app.route('/code', methods=['POST'])
 def post_code():
     code = request.json['code']
-    language = request.json['language']
+    language = request.json['problem'] + '_' + request.json['language']
     api_key = request.json['api_key']
 
     #check if api key is valid
@@ -94,7 +90,7 @@ def get_result(id):
 
     return jsonify({'code': code.code, 'datetime': code.datetime, 'num_tests': code.num_tests, 'tests': [{'test': test.test, 'time': test.time, 'memory': test.memory, 'result': test.result.name} for test in tests]})
 
-@app.route('/result/', methods=['GET'])
+@app.route('/results', methods=['GET'])
 def get_results():
     api_key = request.args.get('api_key')
     page = request.args.get('page')
@@ -104,12 +100,38 @@ def get_results():
     if key is None:
         return jsonify({'error': 'invalid api key'}), 403
 
+    code_query = Code.query.filter_by(api_key=api_key)
+
     if per_page is None:
-        return jsonify({'error': 'per_page not specified'}), 400
+        code = code_query.all()
+        return jsonify({'ids': [code.id for code in code]})
     if page is None:
-        c = Code.query.filter_by(api_key=api_key).count()
+        c = code_query.count()
         return jsonify({'pages': ceil(c/int(per_page))})
 
-    code = Code.query.filter_by(api_key=api_key).paginate(page=int(page), per_page=int(per_page))
+    code = code_query.paginate(page=int(page), per_page=int(per_page))
 
     return jsonify({'ids': [code.id for code in code.items]})
+
+
+
+
+@app.route('/swagger', methods=['GET'])
+def get_swagger():
+    swag = swagger(app)
+    swag['info']['version'] = "1.0"
+    swag['info']['title'] = "Code Tester API"
+    with open('swagger_paths.json', 'r') as f:
+        swag['paths'] = json.load(f)
+    return jsonify(swag)
+
+SWAGGER_URL = '/swagger-ui'
+API_URL = '/swagger'
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Code tester API"
+    }
+)
+app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
