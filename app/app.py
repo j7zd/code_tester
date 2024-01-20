@@ -52,11 +52,11 @@ with app.app_context():
 
 @app.route('/languages', methods=['GET'])
 def get_languages():
-    return jsonify({'languages': ['c++']}) # TODO: ask code tester for languages
+    return jsonify({'languages': ['c++']})
 
 @app.route('/problems', methods=['GET'])
 def get_problems():
-    return jsonify({'problems': ['1']}) # TODO: ask code tester for problems
+    return jsonify({'problems': ['1']})
 
 @app.route('/code', methods=['POST'])
 def post_code():
