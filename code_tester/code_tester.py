@@ -91,24 +91,39 @@ class CodeTester:
 
         return {'result': result, 'time': avg_time, 'memory': memory}
 
-if __name__ == '__main__':
-    code = '#include<iostream>\nusing namespace std;\nint main() { int a, b, c; cin>>a>>b>>c; cout<<c<<" "<<b<<" "<<a<<endl; return 0; }'
-    code_tester = CodeTester(code, '1_c++')
-    print(code_tester.test(1))
+# UNIT TESTS
+# if __name__ == '__main__':
+#     code = '#include<iostream>\nusing namespace std;\nint main() { int a, b, c; cin>>a>>b>>c; cout<<c<<" "<<b<<" "<<a<<endl; return 0; }'
+#     code_tester = CodeTester(code, '1_c++')
+#     t1 = code_tester.test(1)
+#     print(t1)
+#     assert t1['result'] == ResultEnum.OK
 
-    code = '#include<iostream>\nusing namespace std;\nint main() { int a, b, c; cin>>a>>b>>c; cout<<c<<" "<<a<<" "<<b<<endl; return 0; }'
-    code_tester = CodeTester(code, '1_c++')
-    print(code_tester.test(1))
 
-    code = '#include<iostream>\nusing namespace std;\nint main() { int a, b, c; cin>>a>>b>>c; for(int i=0;i<99999999;i++); cout<<c<<" "<<b<<" "<<a<<endl; return 0; }'
-    code_tester = CodeTester(code, '1_c++')
-    print(code_tester.test(1))
+#     code = '#include<iostream>\nusing namespace std;\nint main() { int a, b, c; cin>>a>>b>>c; cout<<c<<" "<<a<<" "<<b<<endl; return 0; }'
+#     code_tester = CodeTester(code, '1_c++')
+#     t1 = code_tester.test(1)
+#     print(t1)
+#     assert t1['result'] == ResultEnum.WA
 
-    code = '#include<iostream>\nusing namespace std;\nint main() { int a, b, c; cin>>a>>b>>c; cout<<c<<" "<<b<<" "<<a<<endl; *((int*)0)=0; return 0; }'
-    code_tester = CodeTester(code, '1_c++')
-    print(code_tester.test(1))
 
-    code = ''
-    code_tester = CodeTester(code, '1_c++')
-    print(code_tester.test(1))
+#     code = '#include<iostream>\nusing namespace std;\nint main() { int a, b, c; cin>>a>>b>>c; for(int i=0;i<99999999;i++); cout<<c<<" "<<b<<" "<<a<<endl; return 0; }'
+#     code_tester = CodeTester(code, '1_c++')
+#     t1 = code_tester.test(1)
+#     print(t1)
+#     assert t1['result'] == ResultEnum.TL
 
+
+#     code = '#include<iostream>\nusing namespace std;\nint main() { int a, b, c; cin>>a>>b>>c; cout<<c<<" "<<b<<" "<<a<<endl; *((int*)0)=0; return 0; }'
+#     code_tester = CodeTester(code, '1_c++')
+#     t1 = code_tester.test(1)
+#     print(t1)
+#     assert t1['result'] == ResultEnum.RE
+
+
+#     code = ''
+#     code_tester = CodeTester(code, '1_c++')
+#     t1 = code_tester.test(1)
+#     print(t1)
+#     assert t1['result'] == ResultEnum.CE
+############

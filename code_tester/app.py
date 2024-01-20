@@ -15,6 +15,15 @@ mysql_host = getenv('MYSQL_HOST')
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}/code'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# FOR TESTING
+# mysql_host = '172.18.0.2:3306'
+# mysql_user = 'root'
+# mysql_password = 'root'
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{mysql_user}:{mysql_password}@{mysql_host}/code'
+#############
+
 db = SQLAlchemy(app)
 
 class Code(db.Model):
@@ -69,4 +78,31 @@ def tc(code_tester: CodeTester, code_id: int):
             test = Test(code_id=code_id, test=i, time=test['time'], memory=test['memory'], result=test['result'])
             db.session.add(test)
         db.session.commit()
+# UNIT TESTS
+# if __name__ == '__main__':
+#     t1 = Thread(target=app.run)
+#     t1.start()
+#     import requests
+    
+#     r = requests.post('http://localhost:5000/code', json={'code': 'int main() {return 0;}', 'language': '1_c++', 'api_key': 'test', 'auth': 'wrong auth key'})
+#     print(r.json())
+#     assert r.status_code == 401
 
+#     r = requests.post('http://localhost:5000/code', json={'code': 'int main() {return 0;}', 'language': '1_c--', 'api_key': 'test', 'auth': auth})
+#     print(r.json())
+#     assert r.status_code == 400
+
+#     r = requests.post('http://localhost:5000/code', json={'code': 'int main() {return 0;}', 'language': '1_c++', 'api_key': 'test', 'auth': auth})
+#     print(r.json())
+#     assert r.status_code == 200
+#     with app.app_context():
+#         cd = Code.query.filter_by(id=r.json()['id']).first()
+#         assert cd is not None
+#         assert cd.api_key == 'test'
+#         assert cd.language == '1_c++'
+#         assert cd.code == 'int main() {return 0;}'
+#         Code.query.filter_by(id=r.json()['id']).delete()
+#         db.session.commit()
+
+#     t1.join()
+############
