@@ -4,6 +4,8 @@ import threading
 import subprocess as sb
 from time import time_ns
 import json
+import docker
+import shutil
 class ResultEnum(Enum):
     OK = 1
     WA = 2
@@ -46,39 +48,27 @@ class CodeTester:
             sout = f.read()
         with open(self.__dir.format(name=str(test) + 'c'), 'r') as f:
             cntxt = json.load(f)
-        
+        client = docker.from_env()
         
         temporary_file_name = f'temp{threading.get_ident()}'
-        with open(temporary_file_name + '.cpp', 'w') as f:
+        os.mkdir(temporary_file_name)
+        with open(temporary_file_name + '/main.cpp', 'w') as f:
             f.write(self.__code)
+        shutil.copyfile('Dockerfile_cpp', temporary_file_name + '/Dockerfile')
 
-        try:
-            sb.check_call(f"g++ {temporary_file_name}.cpp", shell=True)
-        except:
-            os.remove(f'{temporary_file_name}.cpp')
-            return {'result': ResultEnum.CE, 'time': 0, 'memory': 0}
+        image = client.images.build(path=temporary_file_name, tag='test')
+
+
+
         times = []
         result = ResultEnum.OK
         for i in range(10):
             timer_start = time_ns()
-            try:
-                output = sb.run(f"./a.out", shell=True, input=sin, capture_output=True, text=True, timeout=cntxt['max_time'] / 500)
-            except:
-                result = ResultEnum.TL
-                times.append(cntxt['max_time'] * 2000000)
-                break
-            if output.returncode != 0:
-                result = ResultEnum.RE
-                break
-            timer_end = time_ns()
-            times.append(timer_end - timer_start)
-            if output.stdout != sout:
-                result = ResultEnum.WA
-                break
+            
+        os.remove(temporary_file_name + '/main.cpp')
+        os.remove(temporary_file_name + '/Dockerfile')
+        os.rmdir(temporary_file_name)
         
-        os.remove(f'{temporary_file_name}.cpp')
-        os.remove('a.out')
-
         if len(times) == 0:
             avg_time = 0
         else:
